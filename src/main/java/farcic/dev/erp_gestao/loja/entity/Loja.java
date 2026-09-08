@@ -2,7 +2,6 @@ package farcic.dev.erp_gestao.loja.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import farcic.dev.erp_gestao.empresa.entity.Empresa;
-import farcic.dev.erp_gestao.loja.entity.configuracaoFiscal.ConfiguracaoFiscal;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -41,9 +40,6 @@ public class Loja {
     @Setter(AccessLevel.NONE)
     private Empresa empresa;
 
-    /*@JsonIgnore
-    @OneToOne(mappedBy = "loja", fetch = FetchType.LAZY)
-    private ConfiguracaoFiscal configuracaoFiscal;*/
 
     // O builder usa o construtor para preservar defaults e sincronizar a associação.
     @Builder
