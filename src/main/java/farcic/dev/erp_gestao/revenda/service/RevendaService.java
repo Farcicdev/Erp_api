@@ -5,10 +5,12 @@ import farcic.dev.erp_gestao.revenda.dto.response.CriarRevendaResponse;
 import farcic.dev.erp_gestao.revenda.entity.Revenda;
 import farcic.dev.erp_gestao.revenda.mapper.RevendaMapper;
 import farcic.dev.erp_gestao.revenda.repository.RevendaRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +34,13 @@ public class RevendaService {
                 .orElseThrow(() -> new RuntimeException("Revenda não encontrada com o ID: " + id));
     }
 
-    public void deletarRevenda(Long id) {
-        Revenda revenda = buscarRevendaPorId(id);
-        revendaRepository.delete(revenda);
+    @Transactional
+    public void inativarRevenda(Long id) {
+        Revenda revenda = revendaRepository.existsByIdAndAtivoTrue(id);
+        if (revenda == null) {
+            throw new RuntimeException("Revenda não encontrada ou já inativa com o ID: " + id);
+        }
+        revenda.setAtivo(false);
+        revendaRepository.save(revenda);
     }
 }
