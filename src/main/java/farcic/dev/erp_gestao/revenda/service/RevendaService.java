@@ -36,10 +36,7 @@ public class RevendaService {
 
     @Transactional
     public void inativarRevenda(Long id) {
-        Revenda revenda = revendaRepository.existsByIdAndAtivoTrue(id);
-        if (revenda == null) {
-            throw new RuntimeException("Revenda não encontrada ou já inativa com o ID: " + id);
-        }
+        Revenda revenda = buscarRevendaPorId(id);
         revenda.setAtivo(false);
         revendaRepository.save(revenda);
     }

@@ -39,7 +39,7 @@ public class RevendaController {
     }
 
     @PatchMapping("/{id}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void inativar(@PathVariable Long id) {
         revendaService.inativarRevenda(id);
     }

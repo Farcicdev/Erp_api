@@ -13,7 +13,6 @@ public class RevendaMapper {
                 .nome(revendaDTO.nome())
                 .emailContato(revendaDTO.emailContato())
                 .cnpj(revendaDTO.cnpj())
-                .ativo(revendaDTO.ativo())
                 .build();
     }
 

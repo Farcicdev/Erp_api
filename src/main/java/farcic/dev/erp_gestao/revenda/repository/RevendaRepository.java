@@ -5,6 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RevendaRepository extends JpaRepository<Revenda, Long> {
 
-    Revenda existsByIdAndAtivoTrue(Long id);
-
 }
