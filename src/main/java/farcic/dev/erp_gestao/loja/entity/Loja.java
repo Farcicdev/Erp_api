@@ -24,7 +24,7 @@ public class Loja {
     private String nomeFantasia;
     @Column(name = "razao_social", nullable = false, length = 255)
     private String razaoSocial;
-    @Column(name = "cnpj", nullable = false, length = 18)
+    @Column(name = "cnpj", nullable = false, length = 14, unique = true)
     private String cnpj;
     @Column(name = "inscricao_estadual", nullable = false, length = 15)
     private String inscricaoEstadual;

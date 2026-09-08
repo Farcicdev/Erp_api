@@ -1,7 +1,6 @@
 CREATE SEQUENCE revenda_seq START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE empresa_seq START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE loja_seq START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE configuracao_fiscal_seq START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE revenda (
     id BIGINT NOT NULL DEFAULT nextval('revenda_seq'),
@@ -30,23 +29,16 @@ CREATE TABLE loja (
     nome VARCHAR(255) NOT NULL,
     nome_fantasia VARCHAR(255) NOT NULL,
     razao_social VARCHAR(255) NOT NULL,
-    cnpj VARCHAR(18) NOT NULL,
+    cnpj VARCHAR(14) NOT NULL,
     inscricao_estadual VARCHAR(15) NOT NULL,
     regime_tributario VARCHAR(30) NOT NULL,
     ativo BOOLEAN NOT NULL DEFAULT TRUE,
     empresa_id BIGINT NOT NULL,
+    CONSTRAINT uk_loja_cnpj UNIQUE (cnpj),
     CONSTRAINT pk_loja PRIMARY KEY (id),
     CONSTRAINT ck_loja_regime_tributario CHECK (regime_tributario IN
         ('SIMPLES_NACIONAL', 'LUCRO_PRESUMIDO', 'LUCRO_REAL')),
     CONSTRAINT fk_loja_empresa FOREIGN KEY (empresa_id) REFERENCES empresa (id)
-);
-
-CREATE TABLE configuracao_fiscal (
-    id BIGINT NOT NULL DEFAULT nextval('configuracao_fiscal_seq'),
-    loja_id BIGINT NOT NULL,
-    CONSTRAINT pk_configuracao_fiscal PRIMARY KEY (id),
-    CONSTRAINT uk_configuracao_fiscal_loja UNIQUE (loja_id),
-    CONSTRAINT fk_configuracao_fiscal_loja FOREIGN KEY (loja_id) REFERENCES loja (id)
 );
 
 CREATE INDEX idx_empresa_revenda_id ON empresa (revenda_id);
