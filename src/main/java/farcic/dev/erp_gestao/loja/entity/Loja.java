@@ -41,9 +41,9 @@ public class Loja {
     @Setter(AccessLevel.NONE)
     private Empresa empresa;
 
-    @JsonIgnore
+    /*@JsonIgnore
     @OneToOne(mappedBy = "loja", fetch = FetchType.LAZY)
-    private ConfiguracaoFiscal configuracaoFiscal;
+    private ConfiguracaoFiscal configuracaoFiscal;*/
 
     // O builder usa o construtor para preservar defaults e sincronizar a associação.
     @Builder
