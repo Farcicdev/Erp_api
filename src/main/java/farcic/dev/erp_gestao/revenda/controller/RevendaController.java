@@ -38,7 +38,7 @@ public class RevendaController {
         return revendaService.buscarRevendaPorId(id);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/inativacao")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void inativar(@PathVariable Long id) {
         revendaService.inativarRevenda(id);
