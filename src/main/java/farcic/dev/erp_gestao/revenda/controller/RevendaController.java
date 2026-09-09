@@ -10,16 +10,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/revendas")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('OWNER')")
 public class RevendaController {
 
     private final RevendaService revendaService;
 
-    @PostMapping("/criar")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CriarRevendaResponse criarRevenda(@Valid @RequestBody CriarRevendaRequest request) {
         return revendaService.criarRevenda(request);
@@ -27,15 +29,15 @@ public class RevendaController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<Revenda> listarRevendas(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public Page<CriarRevendaResponse> listarRevendas(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return revendaService.listarRevendas(pageable);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Revenda buscarRevendaPorId(@PathVariable Long id) {
-        return revendaService.buscarRevendaPorId(id);
+    public CriarRevendaResponse buscarRevendaPorId(@PathVariable Long id) {
+        return revendaService.revendaPorId(id);
     }
 
     @PatchMapping("/{id}/inativacao")

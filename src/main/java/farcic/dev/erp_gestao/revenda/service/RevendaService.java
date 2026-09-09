@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -25,19 +27,23 @@ public class RevendaService {
         return criarRevendaMapper.toResponse(savedEntity);
     }
 
-    public Page<Revenda> listarRevendas(Pageable pageable) {
-        return revendaRepository.findAll(pageable);
+    public Page<CriarRevendaResponse> listarRevendas(Pageable pageable) {
+        return revendaRepository.findAll(pageable).map(criarRevendaMapper::toResponse);
     }
 
-    public Revenda buscarRevendaPorId(Long id) {
-        return revendaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Revenda não encontrada com o ID: " + id));
+    public CriarRevendaResponse revendaPorId(Long id) {
+        Revenda revenda = buscarRevendaPorId(id);
+        return criarRevendaMapper.toResponse(revenda);
     }
 
     @Transactional
     public void inativarRevenda(Long id) {
         Revenda revenda = buscarRevendaPorId(id);
         revenda.setAtivo(false);
-        revendaRepository.save(revenda);
+    }
+
+    private Revenda buscarRevendaPorId(Long id) {
+        return revendaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Revenda não encontrada com o ID: " + id));
     }
 }
