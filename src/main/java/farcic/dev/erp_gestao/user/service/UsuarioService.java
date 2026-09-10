@@ -2,6 +2,7 @@ package farcic.dev.erp_gestao.user.service;
 
 import farcic.dev.erp_gestao.revenda.entity.Revenda;
 import farcic.dev.erp_gestao.revenda.repository.RevendaRepository;
+import farcic.dev.erp_gestao.shared.exeception.RevendaNotFoundException;
 import farcic.dev.erp_gestao.user.dto.request.VincularUsuarioRevendaRequest;
 import farcic.dev.erp_gestao.user.dto.response.UsuarioRevendaResponse;
 import farcic.dev.erp_gestao.user.entity.Usuario;
@@ -20,11 +21,11 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final RevendaRepository revendaRepository;
 
-    //criar
+    //vincular
     @Transactional
     public UsuarioRevendaResponse vincular(Long revendaId, VincularUsuarioRevendaRequest request) {
         Revenda revenda = revendaRepository.findById(revendaId).orElseThrow(
-                () -> new RuntimeException("Revenda não encontrada")
+                () -> new RevendaNotFoundException("Revenda não encontrada")
         );
 
         if(!revenda.getAtivo()) {
