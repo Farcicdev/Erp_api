@@ -2,7 +2,10 @@ package farcic.dev.erp_gestao.user.entity;
 
 import farcic.dev.erp_gestao.revenda.entity.Revenda;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "usuario_revenda",
@@ -13,7 +16,6 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@Builder
 public class UsuarioRevenda {
 
     @Id
@@ -36,4 +38,9 @@ public class UsuarioRevenda {
     @Column(nullable = false)
     private Boolean ativo = true;
 
+    public UsuarioRevenda(Usuario usuario, Revenda revenda) {
+        this.usuario = usuario;
+        this.revenda = revenda;
+        this.ativo = true;
+    }
 }
