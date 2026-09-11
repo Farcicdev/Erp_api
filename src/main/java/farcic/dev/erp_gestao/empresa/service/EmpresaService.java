@@ -11,6 +11,7 @@ import farcic.dev.erp_gestao.revenda.repository.RevendaRepository;
 import farcic.dev.erp_gestao.shared.exeception.AcessoRevendaNegadoException;
 import farcic.dev.erp_gestao.shared.exeception.RevendaNotFoundException;
 import farcic.dev.erp_gestao.user.repository.UsuarioRevendaRepository;
+import farcic.dev.erp_gestao.user.service.AcessoRevendaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,7 @@ public class EmpresaService {
     private final RevendaRepository revendaRepository;
     private final UsuarioRevendaRepository usuarioRevendaRepository;
     private final EmpresaMapper empresaMapper;
+    private final AcessoRevendaService acessoRevendaService;
 
     //criar
     @Transactional

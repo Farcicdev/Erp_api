@@ -56,9 +56,9 @@ public class EmpresaController {
             );
         }
 
-        @PatchMapping("/{empresaId}/inativacao")
-        @ResponseStatus(HttpStatus.ACCEPTED)
-        public EmpresaResponse inativarEmpresa (@PathVariable Long revendaId, @PathVariable Long empresaId, @AuthenticationPrincipal Jwt jwt, @RequestBody EmpresaStatusRequest request){
+        @PatchMapping("/{empresaId}/status")
+        @ResponseStatus(HttpStatus.OK)
+        public EmpresaResponse mudarStatus (@PathVariable Long revendaId, @PathVariable Long empresaId, @AuthenticationPrincipal Jwt jwt, @Valid @RequestBody EmpresaStatusRequest request){
             return empresaService.mudarStatus(
                     revendaId,
                     jwt.getSubject(),
