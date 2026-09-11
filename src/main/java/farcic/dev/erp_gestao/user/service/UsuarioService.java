@@ -11,9 +11,9 @@ import farcic.dev.erp_gestao.user.entity.Usuario;
 import farcic.dev.erp_gestao.user.entity.UsuarioRevenda;
 import farcic.dev.erp_gestao.user.repository.UsuarioRepository;
 import farcic.dev.erp_gestao.user.repository.UsuarioRevendaRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
