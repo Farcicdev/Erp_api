@@ -2,7 +2,9 @@ package farcic.dev.erp_gestao.user.service;
 
 import farcic.dev.erp_gestao.revenda.entity.Revenda;
 import farcic.dev.erp_gestao.revenda.repository.RevendaRepository;
+import farcic.dev.erp_gestao.shared.exeception.RevendaInativaException;
 import farcic.dev.erp_gestao.shared.exeception.RevendaNotFoundException;
+import farcic.dev.erp_gestao.shared.exeception.UsuarioJaVinculadoException;
 import farcic.dev.erp_gestao.user.dto.request.VincularUsuarioRevendaRequest;
 import farcic.dev.erp_gestao.user.dto.response.UsuarioRevendaResponse;
 import farcic.dev.erp_gestao.user.entity.Usuario;
@@ -29,7 +31,7 @@ public class UsuarioService {
         );
 
         if(!revenda.getAtivo()) {
-            throw new RuntimeException("Revenda não está ativa");
+            throw new RevendaInativaException("Revenda não está ativa");
         }
 
         Usuario usuario = usuarioRepository.findByKeycloakSub(request.keycloakSub()).orElseGet(
@@ -44,7 +46,7 @@ public class UsuarioService {
         );
 
         if(jaExiste) {
-            throw new RuntimeException("Usuário já está vinculado a essa revenda");
+            throw new UsuarioJaVinculadoException("Usuário já está vinculado a essa revenda");
         }
 
         UsuarioRevenda usuarioRevenda = new UsuarioRevenda(usuario, revenda);

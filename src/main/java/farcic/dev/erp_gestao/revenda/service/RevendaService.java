@@ -5,6 +5,7 @@ import farcic.dev.erp_gestao.revenda.dto.response.CriarRevendaResponse;
 import farcic.dev.erp_gestao.revenda.entity.Revenda;
 import farcic.dev.erp_gestao.revenda.mapper.RevendaMapper;
 import farcic.dev.erp_gestao.revenda.repository.RevendaRepository;
+import farcic.dev.erp_gestao.shared.exeception.RevendaNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,6 +43,6 @@ public class RevendaService {
 
     private Revenda buscarRevendaPorId(Long id) {
         return revendaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Revenda não encontrada com o ID: " + id));
+                .orElseThrow(() -> new RevendaNotFoundException("Revenda não encontrada com o ID: " + id));
     }
 }

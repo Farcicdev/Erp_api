@@ -7,6 +7,7 @@ import farcic.dev.erp_gestao.empresa.mapper.EmpresaMapper;
 import farcic.dev.erp_gestao.empresa.repository.EmpresaRepository;
 import farcic.dev.erp_gestao.revenda.entity.Revenda;
 import farcic.dev.erp_gestao.revenda.repository.RevendaRepository;
+import farcic.dev.erp_gestao.shared.exeception.AcessoRevendaNegadoException;
 import farcic.dev.erp_gestao.shared.exeception.RevendaNotFoundException;
 import farcic.dev.erp_gestao.user.repository.UsuarioRevendaRepository;
 import jakarta.transaction.Transactional;
@@ -28,7 +29,7 @@ public class EmpresaService {
         boolean possuiAcesso = usuarioRevendaRepository.existsByUsuario_KeycloakSubAndRevenda_IdAndUsuario_AtivoTrueAndAtivoTrueAndRevenda_AtivoTrue(keycloak, revendaId);
 
         if(!possuiAcesso){
-            throw new RuntimeException("Usuario nao possui acesso a esta revenda");
+            throw new AcessoRevendaNegadoException("Usuario nao possui acesso a esta revenda");
         }
         Revenda revenda = revendaRepository.findById(revendaId).orElseThrow(
                 ()-> new RevendaNotFoundException("Revenda nao encontrada")
