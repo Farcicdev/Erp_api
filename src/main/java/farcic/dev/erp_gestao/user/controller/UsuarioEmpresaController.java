@@ -18,7 +18,7 @@ public class UsuarioEmpresaController {
 
     private final UsuarioEmpresaService usuarioEmpresaService;
 
-    @PostMapping("/{empresaId/usuarios}")
+    @PostMapping("/{empresaId}/usuarios")
     @ResponseStatus(HttpStatus.OK)
     public UsuarioEmpresaResponse vincularEmpresa(@AuthenticationPrincipal String keycloakSubAuthenticado, @PathVariable Long revendaId, @PathVariable Long empresaId, @Valid @RequestBody VincularUsuarioEmpresaRequest vincularUsuarioEmpresaRequest){
         return usuarioEmpresaService.vincularEmpresa(
