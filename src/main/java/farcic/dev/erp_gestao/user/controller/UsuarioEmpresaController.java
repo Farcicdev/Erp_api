@@ -20,7 +20,7 @@ public class UsuarioEmpresaController {
     private final UsuarioEmpresaService usuarioEmpresaService;
 
     @PostMapping("/{empresaId}/usuarios")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public UsuarioEmpresaResponse vincularEmpresa(@AuthenticationPrincipal Jwt jwt, @PathVariable Long revendaId, @PathVariable Long empresaId, @Valid @RequestBody VincularUsuarioEmpresaRequest vincularUsuarioEmpresaRequest){
         return usuarioEmpresaService.vincularEmpresa(
                 jwt.getSubject(),

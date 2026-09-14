@@ -1,5 +1,6 @@
 package farcic.dev.erp_gestao.user.service;
 
+import farcic.dev.erp_gestao.shared.exeception.AcessoRevendaNegadoException;
 import farcic.dev.erp_gestao.user.dto.response.AcessoRevendaResponse;
 import farcic.dev.erp_gestao.user.repository.UsuarioRevendaRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,17 @@ public class AcessoRevendaService {
                         acesso.getRevenda().getNome()
                 ))
                 .toList();
+    }
+
+    public void  validarAcesso(String keycloakSub, Long revendaId){
+        boolean possuiAcesso = usuarioRevendaRepository
+                .existsByUsuario_KeycloakSubAndRevenda_IdAndUsuario_AtivoTrueAndAtivoTrueAndRevenda_AtivoTrue(
+                        keycloakSub,
+                        revendaId
+                );
+        if(!possuiAcesso){
+            throw new AcessoRevendaNegadoException("Usuario não possui acesso a esta revenda");
+        }
     }
 
 }

@@ -21,7 +21,7 @@ public class AcessoEmpresaService {
         )
                 .stream()
                 .map(vinculo -> new AcessoEmpresaResponse(
-                        vinculo.getId(),
+                        vinculo.getEmpresa().getId(),
                         vinculo.getEmpresa().getNome()
                 )).toList();
     }

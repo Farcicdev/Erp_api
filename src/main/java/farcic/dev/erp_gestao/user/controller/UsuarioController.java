@@ -2,7 +2,7 @@ package farcic.dev.erp_gestao.user.controller;
 
 import farcic.dev.erp_gestao.user.dto.request.VincularUsuarioRevendaRequest;
 import farcic.dev.erp_gestao.user.dto.response.UsuarioRevendaResponse;
-import farcic.dev.erp_gestao.user.service.UsuarioService;
+import farcic.dev.erp_gestao.user.service.UsuarioRevendaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UsuarioController {
 
-    private final UsuarioService usuarioService;
+    private final UsuarioRevendaService usuarioRevendaService;
 
     @PostMapping("/{revendaId}/usuarios")
     @PreAuthorize("hasRole('OWNER')")
     @ResponseStatus(HttpStatus.CREATED)
     public UsuarioRevendaResponse criarUsuario(@PathVariable Long revendaId,@Valid @RequestBody VincularUsuarioRevendaRequest request) {
-        return usuarioService.vincular(revendaId, request);
+        return usuarioRevendaService.vincular(revendaId, request);
     }
 
 }

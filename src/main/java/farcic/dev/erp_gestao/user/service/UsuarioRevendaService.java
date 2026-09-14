@@ -9,7 +9,6 @@ import farcic.dev.erp_gestao.user.dto.request.VincularUsuarioRevendaRequest;
 import farcic.dev.erp_gestao.user.dto.response.UsuarioRevendaResponse;
 import farcic.dev.erp_gestao.user.entity.Usuario;
 import farcic.dev.erp_gestao.user.entity.UsuarioRevenda;
-import farcic.dev.erp_gestao.user.repository.UsuarioRepository;
 import farcic.dev.erp_gestao.user.repository.UsuarioRevendaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,10 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class UsuarioService {
+public class UsuarioRevendaService {
 
     private final UsuarioRevendaRepository usuarioRevendaRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioCadastroService usuarioCadastroService;
     private final RevendaRepository revendaRepository;
 
     //vincular
@@ -34,11 +33,7 @@ public class UsuarioService {
             throw new RevendaInativaException("Revenda não está ativa");
         }
 
-        Usuario usuario = usuarioRepository.findByKeycloakSub(request.keycloakSub()).orElseGet(
-                () -> usuarioRepository.save(
-                        new Usuario(request.keycloakSub())
-                )
-        );
+        Usuario usuario = usuarioCadastroService.buscarOuCriar(request.keycloakSub());
 
         boolean jaExiste = usuarioRevendaRepository.existsByUsuarioIdAndRevendaId(
                 usuario.getId(),

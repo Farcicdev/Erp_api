@@ -2,6 +2,8 @@ package farcic.dev.erp_gestao.shared.config;
 
 import farcic.dev.erp_gestao.shared.exeception.AcessoRevendaNegadoException;
 import farcic.dev.erp_gestao.shared.exeception.ResponseError;
+import farcic.dev.erp_gestao.shared.exeception.EmpresaNaoEncontradaException;
+import farcic.dev.erp_gestao.shared.exeception.EmpresaInativaException;
 import farcic.dev.erp_gestao.shared.exeception.RevendaInativaException;
 import farcic.dev.erp_gestao.shared.exeception.RevendaNotFoundException;
 import farcic.dev.erp_gestao.shared.exeception.UsuarioJaVinculadoException;
@@ -15,40 +17,23 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class ExceptionsHandler {
 
-    @ExceptionHandler(RevendaNotFoundException.class)
-    public ResponseEntity<ResponseError> handleRevendaNotFound(RevendaNotFoundException e) {
-        ResponseError error = new ResponseError(
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    @ExceptionHandler({RevendaNotFoundException.class, EmpresaNaoEncontradaException.class})
+    public ResponseEntity<ResponseError> handleNaoEncontrado(RuntimeException e) {
+        return resposta(HttpStatus.NOT_FOUND, e);
     }
 
-    @ExceptionHandler(RevendaInativaException.class)
-    public ResponseEntity<ResponseError> handleRevendaInativa(RevendaInativaException e) {
-        ResponseError error = new ResponseError(
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-    }
-
-    @ExceptionHandler(UsuarioJaVinculadoException.class)
-    public ResponseEntity<ResponseError> handleUsuarioJaVinculado(UsuarioJaVinculadoException e) {
-        ResponseError error = new ResponseError(
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    @ExceptionHandler({RevendaInativaException.class, EmpresaInativaException.class,
+            UsuarioJaVinculadoException.class})
+    public ResponseEntity<ResponseError> handleConflito(RuntimeException e) {
+        return resposta(HttpStatus.CONFLICT, e);
     }
 
     @ExceptionHandler(AcessoRevendaNegadoException.class)
     public ResponseEntity<ResponseError> handleAcessoRevendaNegado(AcessoRevendaNegadoException e) {
-        ResponseError error = new ResponseError(
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+        return resposta(HttpStatus.FORBIDDEN, e);
     }
 
+    private ResponseEntity<ResponseError> resposta(HttpStatus status, RuntimeException e) {
+        return ResponseEntity.status(status).body(new ResponseError(e.getMessage(), LocalDateTime.now()));
+    }
 }
