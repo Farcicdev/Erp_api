@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,9 +21,9 @@ public class UsuarioEmpresaController {
 
     @PostMapping("/{empresaId}/usuarios")
     @ResponseStatus(HttpStatus.OK)
-    public UsuarioEmpresaResponse vincularEmpresa(@AuthenticationPrincipal String keycloakSubAuthenticado, @PathVariable Long revendaId, @PathVariable Long empresaId, @Valid @RequestBody VincularUsuarioEmpresaRequest vincularUsuarioEmpresaRequest){
+    public UsuarioEmpresaResponse vincularEmpresa(@AuthenticationPrincipal Jwt jwt, @PathVariable Long revendaId, @PathVariable Long empresaId, @Valid @RequestBody VincularUsuarioEmpresaRequest vincularUsuarioEmpresaRequest){
         return usuarioEmpresaService.vincularEmpresa(
-                keycloakSubAuthenticado,
+                jwt.getSubject(),
                 revendaId,
                 empresaId,
                 vincularUsuarioEmpresaRequest);

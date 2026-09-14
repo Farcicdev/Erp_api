@@ -1,6 +1,5 @@
 package farcic.dev.erp_gestao.user.service;
 
-import farcic.dev.erp_gestao.empresa.dto.response.EmpresaResponse;
 import farcic.dev.erp_gestao.empresa.entity.Empresa;
 import farcic.dev.erp_gestao.empresa.repository.EmpresaRepository;
 import farcic.dev.erp_gestao.shared.exeception.AcessoRevendaNegadoException;
