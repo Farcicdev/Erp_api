@@ -43,7 +43,7 @@ public class UsuarioEmpresaService {
                 empresa.getId()
         );
 
-        if(!jaExiste){
+        if(jaExiste){
             throw new RuntimeException("Nao e possivel vincular usuario a uma empresa inativa"
             );
         }
