@@ -13,7 +13,7 @@ public record LojaResponse(
         String inscricaoEstadual,
         RegimeTributario regimeTributario,
         Boolean ativo,
-        Long empresaId
+        Long clienteId
 
 ) {
 }

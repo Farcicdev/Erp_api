@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: ${ERP_TEST_DB_URL:jdbc:postgresql://localhost:55439/erp_refactor_test}
+    username: ${ERP_TEST_DB_USERNAME:erp_test}
+    password: ${ERP_TEST_DB_PASSWORD:erp_test}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:65534/test-jwks

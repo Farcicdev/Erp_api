@@ -1,4 +1,6 @@
 package farcic.dev.erp_gestao.loja.dto.request;
 
-public class LojaStatusRequest {
+import jakarta.validation.constraints.NotNull;
+
+public record LojaStatusRequest(@NotNull Boolean ativo) {
 }

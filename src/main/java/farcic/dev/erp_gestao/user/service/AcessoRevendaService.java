@@ -26,7 +26,8 @@ public class AcessoRevendaService {
                 .toList();
     }
 
-    public void  validarAcesso(String keycloakSub, Long revendaId){
+    @Transactional(readOnly = true)
+    public void validarAcesso(String keycloakSub, Long revendaId){
         boolean possuiAcesso = usuarioRevendaRepository
                 .existsByUsuario_KeycloakSubAndRevenda_IdAndUsuario_AtivoTrueAndAtivoTrueAndRevenda_AtivoTrue(
                         keycloakSub,

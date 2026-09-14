@@ -1,6 +1,6 @@
 package farcic.dev.erp_gestao.domain;
 
-import farcic.dev.erp_gestao.empresa.entity.Empresa;
+import farcic.dev.erp_gestao.cliente.entity.Cliente;
 import farcic.dev.erp_gestao.loja.entity.Loja;
 import farcic.dev.erp_gestao.loja.entity.RegimeTributario;
 import farcic.dev.erp_gestao.revenda.entity.Revenda;
@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@org.springframework.test.context.ActiveProfiles("test")
 @SpringBootTest
 @Transactional
 class EstruturaPersistenciaTests {
@@ -33,68 +34,68 @@ class EstruturaPersistenciaTests {
         entityManager.clear();
 
         Loja recuperada = entityManager.find(Loja.class, id);
-        Empresa empresa = recuperada.getEmpresa();
-        assertThat(empresa.getLojas()).containsExactly(recuperada);
-        assertThat(empresa.getRevenda().getEmpresas()).containsExactly(empresa);
+        Cliente cliente = recuperada.getCliente();
+        assertThat(cliente.getLojas()).containsExactly(recuperada);
+        assertThat(cliente.getRevenda().getClientes()).containsExactly(cliente);
         assertThat(recuperada.getAtivo()).isTrue();
     }
 
     @Test
-    void bancoImpedeEmpresaSemRevenda() {
-        assertThatThrownBy(() -> jdbc.update("INSERT INTO empresa (nome) VALUES ('Sem revenda')"))
+    void bancoImpedeClienteSemRevenda() {
+        assertThatThrownBy(() -> jdbc.update("INSERT INTO cliente (nome) VALUES ('Sem revenda')"))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
-    void bancoImpedeLojaSemEmpresa() {
+    void bancoImpedeLojaSemCliente() {
         assertThatThrownBy(() -> jdbc.update("INSERT INTO loja (nome, nome_fantasia, razao_social, cnpj, inscricao_estadual, regime_tributario) "
-                + "VALUES ('Sem empresa', 'Loja', 'Loja Ltda', '12345678000100', '123456789', 'SIMPLES_NACIONAL')"))
+                + "VALUES ('Sem cliente', 'Loja', 'Loja Ltda', '12345678000100', '123456789', 'SIMPLES_NACIONAL')"))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     void bancoImpedeReferenciaInexistente() {
-        assertThatThrownBy(() -> jdbc.update("INSERT INTO empresa (nome, revenda_id) VALUES ('Inválida', -1)"))
+        assertThatThrownBy(() -> jdbc.update("INSERT INTO cliente (nome, revenda_id) VALUES ('Inválida', -1)"))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
-    void bancoImpedeLojaComEmpresaInexistente() {
-        assertThatThrownBy(() -> jdbc.update("INSERT INTO loja (nome, nome_fantasia, razao_social, cnpj, inscricao_estadual, regime_tributario, empresa_id) "
+    void bancoImpedeLojaComClienteInexistente() {
+        assertThatThrownBy(() -> jdbc.update("INSERT INTO loja (nome, nome_fantasia, razao_social, cnpj, inscricao_estadual, regime_tributario, cliente_id) "
                 + "VALUES ('Inválida', 'Loja', 'Loja Ltda', '12345678000100', '123456789', 'SIMPLES_NACIONAL', -1)"))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
-    void excluirRevendaNaoApagaEmpresasEmCascata() {
+    void excluirRevendaNaoApagaClientesEmCascata() {
         Loja loja = criarHierarquia();
-        Long revendaId = loja.getEmpresa().getRevenda().getId();
+        Long revendaId = loja.getCliente().getRevenda().getId();
         entityManager.clear();
         entityManager.remove(entityManager.find(Revenda.class, revendaId));
         assertThatThrownBy(() -> entityManager.flush()).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("fk_empresa_revenda");
+                .hasMessageContaining("fk_cliente_revenda");
     }
 
     @Test
-    void excluirEmpresaNaoApagaLojasEmCascata() {
+    void excluirClienteNaoApagaLojasEmCascata() {
         Loja loja = criarHierarquia();
-        Long empresaId = loja.getEmpresa().getId();
+        Long clienteId = loja.getCliente().getId();
         entityManager.clear();
-        entityManager.remove(entityManager.find(Empresa.class, empresaId));
+        entityManager.remove(entityManager.find(Cliente.class, clienteId));
         assertThatThrownBy(() -> entityManager.flush()).isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("fk_loja_empresa");
+                .hasMessageContaining("fk_loja_cliente");
     }
 
     private Loja criarHierarquia() {
         Revenda revenda = Revenda.builder().nome("Revenda de teste")
                 .emailContato("estrutura@example.test").cnpj("12345678000100").build();
-        Empresa empresa = Empresa.builder().nome("Empresa de teste").revenda(revenda).build();
+        Cliente cliente = Cliente.builder().nome("Cliente de teste").revenda(revenda).build();
         Loja loja = Loja.builder().nome("Loja de teste").nomeFantasia("Loja de teste")
                 .razaoSocial("Loja de teste Ltda").cnpj("12345678000100")
                 .inscricaoEstadual("123456789").regimeTributario(RegimeTributario.SIMPLES_NACIONAL)
-                .empresa(empresa).build();
+                .cliente(cliente).build();
         entityManager.persist(revenda);
-        entityManager.persist(empresa);
+        entityManager.persist(cliente);
         entityManager.persist(loja);
         entityManager.flush();
         return loja;

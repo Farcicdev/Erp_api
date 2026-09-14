@@ -1,6 +1,6 @@
 package farcic.dev.erp_gestao.loja.mapper;
 
-import farcic.dev.erp_gestao.empresa.entity.Empresa;
+import farcic.dev.erp_gestao.cliente.entity.Cliente;
 import farcic.dev.erp_gestao.loja.entity.Loja;
 import farcic.dev.erp_gestao.loja.dto.request.LojaRequest;
 import farcic.dev.erp_gestao.loja.dto.response.LojaResponse;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LojaMapper {
-    public Loja toEntity(LojaRequest request, Empresa empresa) {
+    public Loja toEntity(LojaRequest request, Cliente cliente) {
         return Loja.builder()
                 .nome(request.nome())
                 .nomeFantasia(request.nomeFantasia())
@@ -16,7 +16,7 @@ public class LojaMapper {
                 .cnpj(request.cnpj())
                 .inscricaoEstadual(request.inscricaoEstadual())
                 .regimeTributario(request.regimeTributario())
-                .empresa(empresa)
+                .cliente(cliente)
                 .build();
     }
 
@@ -30,7 +30,7 @@ public class LojaMapper {
                 .inscricaoEstadual(loja.getInscricaoEstadual())
                 .regimeTributario(loja.getRegimeTributario())
                 .ativo(loja.getAtivo())
-                .empresaId(loja.getEmpresa().getId())
+                .clienteId(loja.getCliente().getId())
                 .build();
     }
 }

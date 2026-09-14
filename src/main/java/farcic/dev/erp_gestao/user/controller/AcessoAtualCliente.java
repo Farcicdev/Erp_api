@@ -1,0 +1,28 @@
+package farcic.dev.erp_gestao.user.controller;
+
+import farcic.dev.erp_gestao.user.dto.response.AcessoClienteResponse;
+import farcic.dev.erp_gestao.user.service.AcessoClienteService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/me")
+@RequiredArgsConstructor
+public class AcessoAtualCliente {
+
+    private final AcessoClienteService acessoClienteService;
+
+    @GetMapping("/clientes")
+    @PreAuthorize("hasRole('ADMIN_CLIENTE')")
+    public List<AcessoClienteResponse> acessoCliente(@AuthenticationPrincipal Jwt jwt){
+        return acessoClienteService.acessoCliente(jwt.getSubject());
+    }
+
+}

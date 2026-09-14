@@ -1,6 +1,6 @@
 package farcic.dev.erp_gestao.domain;
 
-import farcic.dev.erp_gestao.empresa.entity.Empresa;
+import farcic.dev.erp_gestao.cliente.entity.Cliente;
 import farcic.dev.erp_gestao.loja.entity.Loja;
 import farcic.dev.erp_gestao.revenda.entity.Revenda;
 import org.junit.jupiter.api.Test;
@@ -14,66 +14,66 @@ class EstruturaOrganizacionalTests {
     @Test
     void buildersPreservamDefaultsEVinculos() {
         Revenda revenda = Revenda.builder().build();
-        Empresa empresa = Empresa.builder().revenda(revenda).build();
-        Loja loja = Loja.builder().empresa(empresa).build();
+        Cliente cliente = Cliente.builder().revenda(revenda).build();
+        Loja loja = Loja.builder().cliente(cliente).build();
 
         assertThat(revenda.getAtivo()).isTrue();
-        assertThat(empresa.getAtivo()).isTrue();
+        assertThat(cliente.getAtivo()).isTrue();
         assertThat(loja.getAtivo()).isTrue();
-        assertThat(revenda.getEmpresas()).containsExactly(empresa);
-        assertThat(empresa.getLojas()).containsExactly(loja);
+        assertThat(revenda.getClientes()).containsExactly(cliente);
+        assertThat(cliente.getLojas()).containsExactly(loja);
         assertThat(Revenda.builder().ativo(null).build().getAtivo()).isTrue();
-        assertThat(Empresa.builder().ativo(false).build().getAtivo()).isFalse();
-        assertThat(new Revenda().getEmpresas()).isEmpty();
-        assertThat(new Empresa().getLojas()).isEmpty();
+        assertThat(Cliente.builder().ativo(false).build().getAtivo()).isFalse();
+        assertThat(new Revenda().getClientes()).isEmpty();
+        assertThat(new Cliente().getLojas()).isEmpty();
     }
 
     @Test
     void trocaDeVinculoAtualizaOsDoisLadosSemDuplicar() {
         Revenda anterior = new Revenda();
         Revenda atual = new Revenda();
-        Empresa empresa = Empresa.builder().revenda(anterior).build();
-        atual.adicionarEmpresa(empresa);
-        atual.adicionarEmpresa(empresa);
+        Cliente cliente = Cliente.builder().revenda(anterior).build();
+        atual.adicionarCliente(cliente);
+        atual.adicionarCliente(cliente);
 
-        assertThat(anterior.getEmpresas()).isEmpty();
-        assertThat(atual.getEmpresas()).containsExactly(empresa);
-        assertThat(empresa.getRevenda()).isSameAs(atual);
+        assertThat(anterior.getClientes()).isEmpty();
+        assertThat(atual.getClientes()).containsExactly(cliente);
+        assertThat(cliente.getRevenda()).isSameAs(atual);
 
-        Empresa outra = new Empresa();
-        Loja loja = Loja.builder().empresa(empresa).build();
-        loja.setEmpresa(outra);
+        Cliente outra = new Cliente();
+        Loja loja = Loja.builder().cliente(cliente).build();
+        loja.setCliente(outra);
         outra.adicionarLoja(loja);
 
-        assertThat(empresa.getLojas()).isEmpty();
+        assertThat(cliente.getLojas()).isEmpty();
         assertThat(outra.getLojas()).containsExactly(loja);
-        assertThat(loja.getEmpresa()).isSameAs(outra);
+        assertThat(loja.getCliente()).isSameAs(outra);
         outra.removerLoja(loja);
         assertThat(outra.getLojas()).isEmpty();
-        assertThat(loja.getEmpresa()).isNull();
-        atual.removerEmpresa(empresa);
-        assertThat(atual.getEmpresas()).isEmpty();
-        assertThat(empresa.getRevenda()).isNull();
+        assertThat(loja.getCliente()).isNull();
+        atual.removerCliente(cliente);
+        assertThat(atual.getClientes()).isEmpty();
+        assertThat(cliente.getRevenda()).isNull();
     }
 
     @Test
     void colecoesNaoPermitemAlterarVinculosPorForaDosMetodos() {
-        assertThatThrownBy(() -> new Revenda().getEmpresas().add(new Empresa()))
+        assertThatThrownBy(() -> new Revenda().getClientes().add(new Cliente()))
                 .isInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(() -> new Empresa().getLojas().add(new Loja()))
+        assertThatThrownBy(() -> new Cliente().getLojas().add(new Loja()))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
     void serializacaoNaoPercorreRelacionamentos() {
         Revenda revenda = Revenda.builder().nome("Revenda").build();
-        Empresa empresa = Empresa.builder().nome("Empresa").revenda(revenda).build();
-        Loja loja = Loja.builder().nome("Loja").empresa(empresa).build();
+        Cliente cliente = Cliente.builder().nome("Cliente").revenda(revenda).build();
+        Loja loja = Loja.builder().nome("Loja").cliente(cliente).build();
         JsonMapper mapper = JsonMapper.builder().build();
 
-        assertThat(mapper.readTree(mapper.writeValueAsString(revenda)).has("empresas")).isFalse();
-        assertThat(mapper.readTree(mapper.writeValueAsString(empresa)).has("revenda")).isFalse();
-        assertThat(mapper.readTree(mapper.writeValueAsString(empresa)).has("lojas")).isFalse();
-        assertThat(mapper.readTree(mapper.writeValueAsString(loja)).has("empresa")).isFalse();
+        assertThat(mapper.readTree(mapper.writeValueAsString(revenda)).has("clientes")).isFalse();
+        assertThat(mapper.readTree(mapper.writeValueAsString(cliente)).has("revenda")).isFalse();
+        assertThat(mapper.readTree(mapper.writeValueAsString(cliente)).has("lojas")).isFalse();
+        assertThat(mapper.readTree(mapper.writeValueAsString(loja)).has("cliente")).isFalse();
     }
 }

@@ -1,7 +1,7 @@
 package farcic.dev.erp_gestao.revenda.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import farcic.dev.erp_gestao.empresa.entity.Empresa;
+import farcic.dev.erp_gestao.cliente.entity.Cliente;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,7 +38,7 @@ public class Revenda {
     @OneToMany(mappedBy = "revenda")
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private List<Empresa> empresas = new ArrayList<>();
+    private List<Cliente> clientes = new ArrayList<>();
 
     // O builder usa o construtor para preservar defaults e sincronizar a associação.
     @Builder
@@ -51,23 +51,23 @@ public class Revenda {
     }
 
     @JsonIgnore
-    public List<Empresa> getEmpresas() {
-        return Collections.unmodifiableList(empresas);
+    public List<Cliente> getClientes() {
+        return Collections.unmodifiableList(clientes);
     }
 
-    public void adicionarEmpresa(Empresa empresa) {
-        Objects.requireNonNull(empresa, "Empresa não pode ser nula");
-        if (!empresas.contains(empresa)) {
-            empresas.add(empresa);
+    public void adicionarCliente(Cliente cliente) {
+        Objects.requireNonNull(cliente, "Cliente não pode ser nulo");
+        if (!clientes.contains(cliente)) {
+            clientes.add(cliente);
         }
-        if (empresa.getRevenda() != this) {
-            empresa.setRevenda(this);
+        if (cliente.getRevenda() != this) {
+            cliente.setRevenda(this);
         }
     }
 
-    public void removerEmpresa(Empresa empresa) {
-        if (empresas.remove(empresa) && empresa.getRevenda() == this) {
-            empresa.setRevenda(null);
+    public void removerCliente(Cliente cliente) {
+        if (clientes.remove(cliente) && cliente.getRevenda() == this) {
+            cliente.setRevenda(null);
         }
     }
 }
