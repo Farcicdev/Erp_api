@@ -41,7 +41,7 @@ class MigrationClienteTests {
                 sql.execute("SELECT setval('empresa_seq', 50)");
                 sql.execute("SELECT setval('usuario_empresa_seq', 70)");
                 Flyway flyway = Flyway.configure().dataSource(url, user, password)
-                        .schemas(schema).defaultSchema(schema).load();
+                        .schemas(schema).defaultSchema(schema).target("4").load();
                 assertThat(flyway.migrate().migrationsExecuted).isEqualTo(1);
                 flyway.validate();
                 assertThat(value(sql, "SELECT nome FROM cliente WHERE id = 1")).isEqualTo("Cliente preservado");
