@@ -22,7 +22,7 @@ public class ExceptionsHandler {
     }
 
     @ExceptionHandler({RevendaInativaException.class, ClienteInativoException.class, LojaInativaException.class,
-            UsuarioJaVinculadoException.class, LojaCnpjJaCadastradoException.class})
+            UsuarioJaVinculadoException.class, LojaCnpjJaCadastradoException.class, ProdutoJaCadastradoException.class})
     public ResponseEntity<ResponseError> handleConflito(RuntimeException e) {
         return resposta(HttpStatus.CONFLICT, e.getMessage());
     }
