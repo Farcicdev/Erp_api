@@ -1,10 +1,10 @@
-package farcic.dev.erp_gestao.produto.dto.respose;
+package farcic.dev.erp_gestao.produto.dto.response;
 
 import farcic.dev.erp_gestao.produto.entity.UnidadeComercial;
 import lombok.Builder;
 
 @Builder
-public record ProdutosResponse(
+public record ProdutoResponse(
         Long id,
         String codigoInterno,
         String descricao,

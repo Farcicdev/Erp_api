@@ -3,7 +3,7 @@ package farcic.dev.erp_gestao.produto;
 import farcic.dev.erp_gestao.cliente.entity.Cliente;
 import farcic.dev.erp_gestao.loja.entity.Loja;
 import farcic.dev.erp_gestao.loja.entity.RegimeTributario;
-import farcic.dev.erp_gestao.produto.repository.ProdutosRepository;
+import farcic.dev.erp_gestao.produto.repository.ProdutoRepository;
 import farcic.dev.erp_gestao.revenda.entity.Revenda;
 import farcic.dev.erp_gestao.user.entity.Usuario;
 import farcic.dev.erp_gestao.user.entity.UsuarioCliente;
@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -35,7 +36,7 @@ class ProdutoHttpTests {
     @Autowired MockMvc mvc;
     @Autowired EntityManager em;
     @Autowired
-    ProdutosRepository produtos;
+    ProdutoRepository produtos;
     Revenda revenda;
     Cliente cliente;
     Loja loja, outraLoja, lojaOutroCliente, lojaOutraRevenda;
@@ -140,7 +141,7 @@ class ProdutoHttpTests {
     @Test
     void codigoDuplicadoRetorna409InclusiveQuandoProdutoInativo() throws Exception {
         criar(loja, JSON).andExpect(status().isCreated());
-        em.createQuery("update Produtos p set p.ativo = false where p.loja.id = :lojaId")
+        em.createQuery("update Produto p set p.ativo = false where p.loja.id = :lojaId")
                 .setParameter("lojaId", loja.getId()).executeUpdate();
         em.clear();
         criar(loja, JSON.replace("12345678 ", "87654321 "))
@@ -200,6 +201,67 @@ class ProdutoHttpTests {
         };
         criar(loja, body).andExpect(status().isBadRequest());
         naoGravou();
+    }
+
+    @Test
+    void listaSomenteAtivosDaLojaComPaginacaoETotalCorretos() throws Exception {
+        criar(loja, JSON).andExpect(status().isCreated());
+        em.createQuery("update Produto p set p.ativo = false where p.loja.id = :lojaId")
+                .setParameter("lojaId", loja.getId()).executeUpdate();
+        em.clear();
+        criar(loja, JSON.replace(" A ", "B").replace("12345678 ", "87654321 "))
+                .andExpect(status().isCreated());
+        criar(loja, JSON.replace(" A ", "C").replace("12345678 ", "11111111 "))
+                .andExpect(status().isCreated());
+        criar(outraLoja, JSON).andExpect(status().isCreated());
+
+        for (int page = 0; page < 2; page++) {
+            listar(loja, page, 1).andExpect(status().isOk())
+                    .andExpect(jsonPath("$.content.length()").value(1))
+                    .andExpect(jsonPath("$.content[0].ativo").value(true))
+                    .andExpect(jsonPath("$.content[0].lojaId").value(loja.getId()))
+                    .andExpect(jsonPath("$.totalElements").value(2))
+                    .andExpect(jsonPath("$.totalPages").value(2))
+                    .andExpect(jsonPath("$.number").value(page));
+        }
+        listar(loja, 2, 1).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isEmpty())
+                .andExpect(jsonPath("$.totalElements").value(2));
+    }
+
+    @Test
+    void lojaSomenteComInativosRetornaPaginaVazia() throws Exception {
+        criar(loja, JSON).andExpect(status().isCreated());
+        em.createQuery("update Produto p set p.ativo = false where p.loja.id = :lojaId")
+                .setParameter("lojaId", loja.getId()).executeUpdate();
+        em.clear();
+        listar(loja, 0, 10).andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isEmpty())
+                .andExpect(jsonPath("$.totalElements").value(0));
+    }
+
+    @Test
+    void listagemExigeAutenticacaoRoleEVinculoComCliente() throws Exception {
+        mvc.perform(get(url(loja))).andExpect(status().isUnauthorized());
+        mvc.perform(get(url(loja)).with(jwt().jwt(token -> token.subject("admin-produto"))
+                        .authorities(new SimpleGrantedAuthority("ROLE_ADMIN_REVENDA"))))
+                .andExpect(status().isForbidden());
+        listar(lojaOutroCliente, 0, 10).andExpect(status().isForbidden());
+        listar(lojaOutraRevenda, 0, 10).andExpect(status().isForbidden());
+    }
+
+    @Test
+    void listagemValidaParametrosDePaginacao() throws Exception {
+        listar(loja, -1, 10).andExpect(status().isBadRequest());
+        listar(loja, 0, 0).andExpect(status().isBadRequest());
+        listar(loja, 0, 101).andExpect(status().isBadRequest());
+    }
+
+    private ResultActions listar(Loja destino, int page, int size) throws Exception {
+        return mvc.perform(get(url(destino)).param("page", String.valueOf(page))
+                .param("size", String.valueOf(size))
+                .with(jwt().jwt(token -> token.subject("admin-produto"))
+                        .authorities(new SimpleGrantedAuthority("ROLE_ADMIN_CLIENTE"))));
     }
 
     private ResultActions criar(Loja destino, String body) throws Exception {

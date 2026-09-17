@@ -1,8 +1,8 @@
 package farcic.dev.erp_gestao.produto;
 
-import farcic.dev.erp_gestao.produto.entity.Produtos;
+import farcic.dev.erp_gestao.produto.entity.Produto;
 import farcic.dev.erp_gestao.produto.entity.UnidadeComercial;
-import farcic.dev.erp_gestao.produto.repository.ProdutosRepository;
+import farcic.dev.erp_gestao.produto.repository.ProdutoRepository;
 import farcic.dev.erp_gestao.loja.entity.Loja;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
@@ -20,18 +20,18 @@ import static org.assertj.core.api.Assertions.*;
 @Transactional
 class ProdutoPersistenciaTests {
     @Autowired
-    ProdutosRepository repository;
+    ProdutoRepository repository;
     @Autowired EntityManager entityManager;
     @Autowired JdbcTemplate jdbc;
 
     @Test
     void persistePeloRepositorioComDefaultEPermiteMultiplosGtinsAusentes() {
         Long lojaId = criarLoja("11111111000111");
-        Produtos produto = produto(lojaId, "A", "  ");
+        Produto produto = produto(lojaId, "A", "  ");
         repository.saveAndFlush(produto);
         repository.saveAndFlush(produto(lojaId, "B", null));
         entityManager.clear();
-        Produtos salvo = repository.findById(produto.getId()).orElseThrow();
+        Produto salvo = repository.findById(produto.getId()).orElseThrow();
         assertThat(salvo.getAtivo()).isTrue();
         assertThat(salvo.getGtin()).isNull();
         assertThat(salvo.getLoja().getId()).isEqualTo(lojaId);
@@ -94,8 +94,8 @@ class ProdutoPersistenciaTests {
                 unidade, unidade, lojaId);
     }
 
-    private Produtos produto(Long lojaId, String codigo, String gtin) {
-        return Produtos.builder().codigoInterno(codigo).descricao("Produto")
+    private Produto produto(Long lojaId, String codigo, String gtin) {
+        return Produto.builder().codigoInterno(codigo).descricao("Produto")
                 .gtin(gtin).unidade(UnidadeComercial.UN).ncm("12345678")
                 .loja(entityManager.getReference(Loja.class, lojaId)).build();
     }

@@ -1,12 +1,12 @@
 package farcic.dev.erp_gestao.produto;
 
 import farcic.dev.erp_gestao.loja.entity.Loja;
-import farcic.dev.erp_gestao.produto.dto.request.ProdutosRequest;
-import farcic.dev.erp_gestao.produto.entity.Produtos;
+import farcic.dev.erp_gestao.produto.dto.request.ProdutoRequest;
+import farcic.dev.erp_gestao.produto.entity.Produto;
 import farcic.dev.erp_gestao.produto.entity.UnidadeComercial;
-import farcic.dev.erp_gestao.produto.mapper.ProdutosMapper;
-import farcic.dev.erp_gestao.produto.repository.ProdutosRepository;
-import farcic.dev.erp_gestao.produto.service.CriarProdutosService;
+import farcic.dev.erp_gestao.produto.mapper.ProdutoMapper;
+import farcic.dev.erp_gestao.produto.repository.ProdutoRepository;
+import farcic.dev.erp_gestao.produto.service.CriarProdutoService;
 import farcic.dev.erp_gestao.shared.exeception.AcessoClienteNegadoException;
 import farcic.dev.erp_gestao.shared.exeception.ProdutoJaCadastradoException;
 import farcic.dev.erp_gestao.user.service.AcessoLojaService;
@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class CriarProdutosServiceTests {
-    private final ProdutosRepository produtos = mock(ProdutosRepository.class);
+class CriarProdutoServiceTests {
+    private final ProdutoRepository produtos = mock(ProdutoRepository.class);
     private final AcessoLojaService acesso = mock(AcessoLojaService.class);
-    private final CriarProdutosService service = new CriarProdutosService(produtos, acesso, new ProdutosMapper());
+    private final CriarProdutoService service = new CriarProdutoService(produtos, acesso, new ProdutoMapper());
 
     @Test
     void acessoNegadoNaoConsultaNemGravaProdutos() {
@@ -53,13 +53,13 @@ class CriarProdutosServiceTests {
     @Test
     void criaProdutoAtivoNaLojaAutorizadaERetornaDadosPersistidos() {
         Loja loja = permitirAcesso();
-        when(produtos.save(any(Produtos.class))).thenAnswer(invocation -> {
-            Produtos produto = invocation.getArgument(0);
+        when(produtos.save(any(Produto.class))).thenAnswer(invocation -> {
+            Produto produto = invocation.getArgument(0);
             assertThat(produto.getLoja()).isSameAs(loja);
             produto.setId(9L);
             return produto;
         });
-        ProdutosRequest request = request(" 12345678 ");
+        ProdutoRequest request = request(" 12345678 ");
 
         var response = service.cadastrarProdutos(request, 2L, "usuario");
 
@@ -75,13 +75,13 @@ class CriarProdutosServiceTests {
     @Test
     void gtinAusenteNaoConsultaDuplicidadeDeGtin() {
         permitirAcesso();
-        when(produtos.save(any(Produtos.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(produtos.save(any(Produto.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         var response = service.cadastrarProdutos(request("  "), 2L, "usuario");
 
         assertThat(response.gtin()).isNull();
         verify(produtos, never()).existsByLoja_IdAndGtin(any(), any());
-        verify(produtos).save(any(Produtos.class));
+        verify(produtos).save(any(Produto.class));
     }
 
     private Loja permitirAcesso() {
@@ -90,7 +90,7 @@ class CriarProdutosServiceTests {
         return loja;
     }
 
-    private ProdutosRequest request(String gtin) {
-        return new ProdutosRequest(" A ", "Produto", gtin, UnidadeComercial.UN, "12345678", "1234567");
+    private ProdutoRequest request(String gtin) {
+        return new ProdutoRequest(" A ", "Produto", gtin, UnidadeComercial.UN, "12345678", "1234567");
     }
 }

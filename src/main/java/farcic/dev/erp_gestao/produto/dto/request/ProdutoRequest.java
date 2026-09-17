@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record ProdutosRequest(
+public record ProdutoRequest(
 
         @NotBlank
         @Size(max = 50)
@@ -26,7 +26,7 @@ public record ProdutosRequest(
         String cest
 
 ) {
-    public ProdutosRequest {
+    public ProdutoRequest {
         codigoInterno = normalizar(codigoInterno);
         descricao = normalizar(descricao);
         gtin = normalizar(gtin);
