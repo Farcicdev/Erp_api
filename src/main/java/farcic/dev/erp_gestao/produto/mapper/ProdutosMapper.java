@@ -1,15 +1,15 @@
 package farcic.dev.erp_gestao.produto.mapper;
 
-import farcic.dev.erp_gestao.produto.dto.request.ProdutoRequest;
-import farcic.dev.erp_gestao.produto.dto.respose.ProdutoResponse;
+import farcic.dev.erp_gestao.produto.dto.request.ProdutosRequest;
+import farcic.dev.erp_gestao.produto.dto.respose.ProdutosResponse;
 import farcic.dev.erp_gestao.produto.entity.Produtos;
 import farcic.dev.erp_gestao.loja.entity.Loja;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProdutoMapper {
+public class ProdutosMapper {
 
-    public Produtos toEntity (ProdutoRequest request, Loja loja){
+    public Produtos toEntity (ProdutosRequest request, Loja loja){
         return Produtos.builder()
                 .codigoInterno(request.codigoInterno())
                 .descricao(request.descricao())
@@ -21,8 +21,8 @@ public class ProdutoMapper {
                 .build();
     }
 
-    public ProdutoResponse toResponse(Produtos entity){
-        return ProdutoResponse.builder()
+    public ProdutosResponse toResponse(Produtos entity){
+        return ProdutosResponse.builder()
                 .id(entity.getId())
                 .codigoInterno(entity.getCodigoInterno())
                 .descricao(entity.getDescricao())

@@ -4,7 +4,7 @@ import farcic.dev.erp_gestao.produto.entity.UnidadeComercial;
 import lombok.Builder;
 
 @Builder
-public record ProdutoResponse(
+public record ProdutosResponse(
         Long id,
         String codigoInterno,
         String descricao,

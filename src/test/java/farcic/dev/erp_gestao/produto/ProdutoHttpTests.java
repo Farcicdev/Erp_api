@@ -3,7 +3,7 @@ package farcic.dev.erp_gestao.produto;
 import farcic.dev.erp_gestao.cliente.entity.Cliente;
 import farcic.dev.erp_gestao.loja.entity.Loja;
 import farcic.dev.erp_gestao.loja.entity.RegimeTributario;
-import farcic.dev.erp_gestao.produto.repository.ProdutoRepository;
+import farcic.dev.erp_gestao.produto.repository.ProdutosRepository;
 import farcic.dev.erp_gestao.revenda.entity.Revenda;
 import farcic.dev.erp_gestao.user.entity.Usuario;
 import farcic.dev.erp_gestao.user.entity.UsuarioCliente;
@@ -34,7 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProdutoHttpTests {
     @Autowired MockMvc mvc;
     @Autowired EntityManager em;
-    @Autowired ProdutoRepository produtos;
+    @Autowired
+    ProdutosRepository produtos;
     Revenda revenda;
     Cliente cliente;
     Loja loja, outraLoja, lojaOutroCliente, lojaOutraRevenda;

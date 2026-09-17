@@ -1,12 +1,12 @@
 package farcic.dev.erp_gestao.produto;
 
 import farcic.dev.erp_gestao.loja.entity.Loja;
-import farcic.dev.erp_gestao.produto.dto.request.ProdutoRequest;
+import farcic.dev.erp_gestao.produto.dto.request.ProdutosRequest;
 import farcic.dev.erp_gestao.produto.entity.Produtos;
 import farcic.dev.erp_gestao.produto.entity.UnidadeComercial;
-import farcic.dev.erp_gestao.produto.mapper.ProdutoMapper;
-import farcic.dev.erp_gestao.produto.repository.ProdutoRepository;
-import farcic.dev.erp_gestao.produto.service.CriarProdutoService;
+import farcic.dev.erp_gestao.produto.mapper.ProdutosMapper;
+import farcic.dev.erp_gestao.produto.repository.ProdutosRepository;
+import farcic.dev.erp_gestao.produto.service.CriarProdutosService;
 import farcic.dev.erp_gestao.shared.exeception.AcessoClienteNegadoException;
 import farcic.dev.erp_gestao.shared.exeception.ProdutoJaCadastradoException;
 import farcic.dev.erp_gestao.user.service.AcessoLojaService;
@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class CriarProdutoServiceTests {
-    private final ProdutoRepository produtos = mock(ProdutoRepository.class);
+class CriarProdutosServiceTests {
+    private final ProdutosRepository produtos = mock(ProdutosRepository.class);
     private final AcessoLojaService acesso = mock(AcessoLojaService.class);
-    private final CriarProdutoService service = new CriarProdutoService(produtos, acesso, new ProdutoMapper());
+    private final CriarProdutosService service = new CriarProdutosService(produtos, acesso, new ProdutosMapper());
 
     @Test
     void acessoNegadoNaoConsultaNemGravaProdutos() {
@@ -59,7 +59,7 @@ class CriarProdutoServiceTests {
             produto.setId(9L);
             return produto;
         });
-        ProdutoRequest request = request(" 12345678 ");
+        ProdutosRequest request = request(" 12345678 ");
 
         var response = service.cadastrarProdutos(request, 2L, "usuario");
 
@@ -90,7 +90,7 @@ class CriarProdutoServiceTests {
         return loja;
     }
 
-    private ProdutoRequest request(String gtin) {
-        return new ProdutoRequest(" A ", "Produto", gtin, UnidadeComercial.UN, "12345678", "1234567");
+    private ProdutosRequest request(String gtin) {
+        return new ProdutosRequest(" A ", "Produto", gtin, UnidadeComercial.UN, "12345678", "1234567");
     }
 }

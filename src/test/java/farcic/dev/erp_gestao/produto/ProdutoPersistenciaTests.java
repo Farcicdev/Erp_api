@@ -2,7 +2,7 @@ package farcic.dev.erp_gestao.produto;
 
 import farcic.dev.erp_gestao.produto.entity.Produtos;
 import farcic.dev.erp_gestao.produto.entity.UnidadeComercial;
-import farcic.dev.erp_gestao.produto.repository.ProdutoRepository;
+import farcic.dev.erp_gestao.produto.repository.ProdutosRepository;
 import farcic.dev.erp_gestao.loja.entity.Loja;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,8 @@ import static org.assertj.core.api.Assertions.*;
 @ActiveProfiles("test")
 @Transactional
 class ProdutoPersistenciaTests {
-    @Autowired ProdutoRepository repository;
+    @Autowired
+    ProdutosRepository repository;
     @Autowired EntityManager entityManager;
     @Autowired JdbcTemplate jdbc;
 
