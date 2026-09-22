@@ -1,5 +1,6 @@
 package farcic.dev.erp_gestao.produto.controller;
 
+import farcic.dev.erp_gestao.produto.service.BuscarProdutosPorIdService;
 import lombok.RequiredArgsConstructor;
 import farcic.dev.erp_gestao.produto.dto.request.ProdutoRequest;
 import farcic.dev.erp_gestao.produto.dto.response.ProdutoResponse;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProdutoController {
     private final CriarProdutoService criarProdutoService;
     private final ListarProdutoService listarProdutoService;
+    private final BuscarProdutosPorIdService buscarProdutosPorIdService;
 
     @GetMapping
     public Page<ProdutoResponse> listar(@PathVariable Long lojaId, @AuthenticationPrincipal Jwt jwt,
@@ -42,5 +44,11 @@ public class ProdutoController {
     @ResponseStatus(HttpStatus.CREATED)
     public ProdutoResponse criar(@PathVariable Long lojaId, @AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ProdutoRequest request) {
         return criarProdutoService.cadastrarProdutos(request, lojaId, jwt.getSubject());
+    }
+
+    @GetMapping("/{produtoId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ProdutoResponse buscarPorId(@PathVariable Long lojaId, @PathVariable Long produtoId, @AuthenticationPrincipal Jwt jwt){
+        return buscarProdutosPorIdService.buscarProdutosPorId(lojaId, produtoId,jwt.getSubject());
     }
 }

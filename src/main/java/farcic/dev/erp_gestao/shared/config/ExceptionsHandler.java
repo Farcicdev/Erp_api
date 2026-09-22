@@ -51,6 +51,11 @@ public class ExceptionsHandler {
         return resposta(HttpStatus.BAD_REQUEST, "Requisição inválida");
     }
 
+    @ExceptionHandler(ProdutoInativoException.class)
+    public ResponseEntity<ResponseError> produtoInativoException(Exception e){
+        return resposta(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
     private ResponseEntity<ResponseError> resposta(HttpStatus status, String mensagem) {
         return ResponseEntity.status(status).body(new ResponseError(mensagem, LocalDateTime.now()));
     }
