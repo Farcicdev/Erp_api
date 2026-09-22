@@ -1,58 +1,36 @@
-import { Button } from '@mui/material'
+import { Button, CssBaseline, ThemeProvider, Typography } from '@mui/material'
+import { BrowserRouter } from 'react-router'
 import './App.css'
 import keycloak from './auth/keycloak'
-import { LojasPage } from './pages/LojasPage'
+import { AppRoutes } from './routes/AppRoutes'
+import { theme } from './theme/theme'
 
 function App() {
-    const nomeUsuario =
-        keycloak.tokenParsed?.preferred_username ?? 'Usuário'
-
-    const roles =
-        keycloak.tokenParsed?.resource_access?.['erp-api']?.roles ?? []
-
     function entrar() {
         keycloak.login()
     }
 
-    function sair() {
-        keycloak.logout({
-            redirectUri: window.location.origin,
-        })
-    }
-
     return (
-        <main className="pagina-inicial">
-            <h1>ERP Gestão</h1>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <BrowserRouter>
+                {keycloak.authenticated ? (
+                    <AppRoutes />
+                ) : (
+                    <main className="pagina-inicial">
+                        <Typography variant="h4" component="h1">ERP Gestão</Typography>
+                        <p>Entre para acessar o sistema.</p>
 
-            {keycloak.authenticated ? (
-                <>
-                    <h2>Olá, {nomeUsuario}</h2>
-
-                    <p>Roles: {roles.join(', ')}</p>
-
-                    <LojasPage />
-
-                    <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={sair}
-                    >
-                        Sair
-                    </Button>
-                </>
-            ) : (
-                <>
-                    <p>Entre para acessar o sistema.</p>
-
-                    <Button
-                        variant="contained"
-                        onClick={entrar}
-                    >
-                        Entrar
-                    </Button>
-                </>
-            )}
-        </main>
+                        <Button
+                            variant="contained"
+                            onClick={entrar}
+                        >
+                            Entrar
+                        </Button>
+                    </main>
+                )}
+            </BrowserRouter>
+        </ThemeProvider>
     )
 }
 

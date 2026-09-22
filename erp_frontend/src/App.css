@@ -5,15 +5,4 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background-color: #f4f6f8;
-  color: #1f2937;
-}
-
-.pagina-inicial button {
-  padding: 10px 20px;
-  border: 0;
-  border-radius: 6px;
-  background-color: #2563eb;
-  color: white;
-  cursor: pointer;
 }
