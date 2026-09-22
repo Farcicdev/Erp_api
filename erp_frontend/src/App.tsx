@@ -1,43 +1,59 @@
+import { Button } from '@mui/material'
 import './App.css'
-import keycloak from './auth/keycloak.ts'
+import keycloak from './auth/keycloak'
+import { LojasPage } from './pages/LojasPage'
 
-function App(){
-    function entrar(){
+function App() {
+    const nomeUsuario =
+        keycloak.tokenParsed?.preferred_username ?? 'Usuário'
+
+    const roles =
+        keycloak.tokenParsed?.resource_access?.['erp-api']?.roles ?? []
+
+    function entrar() {
         keycloak.login()
     }
 
-    function sair(){
+    function sair() {
         keycloak.logout({
-            redirectUri: window.location.origin
+            redirectUri: window.location.origin,
         })
     }
 
-    const nomeUsuario = keycloak.tokenParsed?.preferred_username ?? 'Usuario'
-
-    const roles = keycloak.tokenParsed?.resource_access?.['erp-api']?.roles ?? []
-
-    return(
+    return (
         <main className="pagina-inicial">
-            <h1>ERP Gestao</h1>
-            {keycloak.authenticated ?(
-            <>
-                <h2>Olá, {nomeUsuario}</h2>
+            <h1>ERP Gestão</h1>
 
-                <p>Roles: {roles.length > 0 ? roles.join(',') : 'Nenhuma role encontrada' }</p>
+            {keycloak.authenticated ? (
+                <>
+                    <h2>Olá, {nomeUsuario}</h2>
 
-                <button onClick={sair}>Sair</button>
-            </>
+                    <p>Roles: {roles.join(', ')}</p>
+
+                    <LojasPage />
+
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={sair}
+                    >
+                        Sair
+                    </Button>
+                </>
             ) : (
                 <>
-                <p>Entre para Acessar o sistema</p>
+                    <p>Entre para acessar o sistema.</p>
 
-                <button onClick={entrar}>
-                    Entrar
-                </button>
+                    <Button
+                        variant="contained"
+                        onClick={entrar}
+                    >
+                        Entrar
+                    </Button>
                 </>
             )}
         </main>
-        )
+    )
 }
 
 export default App
