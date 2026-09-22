@@ -10,7 +10,7 @@ type SidebarProps = {
 
 export function Sidebar({ aberto, onFechar, largura }: SidebarProps) {
     // A visibilidade do menu não substitui a autorização feita pelo backend.
-    const podeVerLojas = keycloak.hasResourceRole('ADMIN_CLIENTE', 'erp-api')
+    const ehAdminCliente = keycloak.hasResourceRole('ADMIN_CLIENTE', 'erp-api')
     const menu = (
         <>
             <List>
@@ -18,11 +18,17 @@ export function Sidebar({ aberto, onFechar, largura }: SidebarProps) {
                     sx={{ '&.active': { bgcolor: 'action.selected' } }}>
                     <ListItemText primary="Dashboard" />
                 </ListItemButton>
-                {podeVerLojas && (
-                    <ListItemButton component={NavLink} to="/lojas" onClick={onFechar}
-                        sx={{ '&.active': { bgcolor: 'action.selected' } }}>
-                        <ListItemText primary="Minhas lojas" />
-                    </ListItemButton>
+                {ehAdminCliente && (
+                    <>
+                        <ListItemButton component={NavLink} to="/lojas" onClick={onFechar}
+                            sx={{ '&.active': { bgcolor: 'action.selected' } }}>
+                            <ListItemText primary="Minhas lojas" />
+                        </ListItemButton>
+                        <ListItemButton component={NavLink} to="/produtos" onClick={onFechar}
+                            sx={{ '&.active': { bgcolor: 'action.selected' } }}>
+                            <ListItemText primary="Produtos" />
+                        </ListItemButton>
+                    </>
                 )}
             </List>
         </>
