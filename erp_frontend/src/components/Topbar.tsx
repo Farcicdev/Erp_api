@@ -1,5 +1,7 @@
-import { AppBar, Button, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material'
+import { Link } from 'react-router'
 import keycloak from '../auth/keycloak'
+import { useLoja } from '../contexts/useLoja'
 
 type TopbarProps = {
     menuAberto: boolean
@@ -7,6 +9,8 @@ type TopbarProps = {
 }
 
 export function Topbar({ menuAberto, onAbrirMenu }: TopbarProps) {
+    const { lojaAtual, possuiMultiplasLojas } = useLoja()
+    const ehAdminCliente = keycloak.hasResourceRole('ADMIN_CLIENTE', 'erp-api')
     const nomeUsuario = keycloak.tokenParsed?.name
         ?? keycloak.tokenParsed?.preferred_username
         ?? 'Usuário'
@@ -16,7 +20,7 @@ export function Topbar({ menuAberto, onAbrirMenu }: TopbarProps) {
     }
 
     return (
-        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <AppBar position="static">
             <Toolbar sx={{ gap: 1 }}>
                 <Button
                     color="inherit"
@@ -33,6 +37,16 @@ export function Topbar({ menuAberto, onAbrirMenu }: TopbarProps) {
                 </Typography>
                 <Button color="inherit" onClick={sair}>Sair</Button>
             </Toolbar>
+            {ehAdminCliente && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: { xs: 2, sm: 3 }, pb: 1 }}>
+                    <Typography noWrap sx={{ flex: 1, minWidth: 0 }} title={lojaAtual?.nomeFantasia}>
+                        {lojaAtual?.nomeFantasia ?? 'Nenhuma loja selecionada'}
+                    </Typography>
+                    {possuiMultiplasLojas && (
+                        <Button color="inherit" component={Link} to="/lojas" sx={{ flexShrink: 0 }}>Trocar loja</Button>
+                    )}
+                </Box>
+            )}
         </AppBar>
     )
 }

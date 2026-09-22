@@ -4,6 +4,7 @@ import './App.css'
 import keycloak from './auth/keycloak'
 import { AppRoutes } from './routes/AppRoutes'
 import { theme } from './theme/theme'
+import { LojaProvider } from './contexts/LojaProvider'
 
 function App() {
     function entrar() {
@@ -15,7 +16,9 @@ function App() {
             <CssBaseline />
             <BrowserRouter>
                 {keycloak.authenticated ? (
-                    <AppRoutes />
+                    <LojaProvider>
+                        <AppRoutes />
+                    </LojaProvider>
                 ) : (
                     <main className="pagina-inicial">
                         <Typography variant="h4" component="h1">ERP Gestão</Typography>

@@ -1,4 +1,4 @@
-import { Box, Drawer, List, ListItemButton, ListItemText, Toolbar } from '@mui/material'
+import { Box, Drawer, List, ListItemButton, ListItemText } from '@mui/material'
 import { NavLink } from 'react-router'
 import keycloak from '../auth/keycloak'
 
@@ -13,7 +13,6 @@ export function Sidebar({ aberto, onFechar, largura }: SidebarProps) {
     const podeVerLojas = keycloak.hasResourceRole('ADMIN_CLIENTE', 'erp-api')
     const menu = (
         <>
-            <Toolbar />
             <List>
                 <ListItemButton component={NavLink} to="/dashboard" onClick={onFechar}
                     sx={{ '&.active': { bgcolor: 'action.selected' } }}>
@@ -36,7 +35,7 @@ export function Sidebar({ aberto, onFechar, largura }: SidebarProps) {
                 {menu}
             </Drawer>
             <Drawer variant="permanent"
-                sx={{ display: { xs: 'none', md: 'block' }, '& .MuiDrawer-paper': { width: largura } }}>
+                sx={{ display: { xs: 'none', md: 'block' }, height: '100%', '& .MuiDrawer-paper': { width: largura, position: 'relative', height: '100%' } }}>
                 {menu}
             </Drawer>
         </Box>
