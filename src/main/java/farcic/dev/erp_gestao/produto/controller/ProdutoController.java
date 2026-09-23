@@ -1,28 +1,23 @@
 package farcic.dev.erp_gestao.produto.controller;
 
-import farcic.dev.erp_gestao.produto.service.BuscarProdutosPorIdService;
-import lombok.RequiredArgsConstructor;
 import farcic.dev.erp_gestao.produto.dto.request.ProdutoRequest;
 import farcic.dev.erp_gestao.produto.dto.response.ProdutoResponse;
+import farcic.dev.erp_gestao.produto.service.BuscarProdutoPorIdService;
+import farcic.dev.erp_gestao.produto.service.BuscarProdutoService;
 import farcic.dev.erp_gestao.produto.service.CriarProdutoService;
 import farcic.dev.erp_gestao.produto.service.ListarProdutoService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/lojas/{lojaId}/produtos")
@@ -31,7 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProdutoController {
     private final CriarProdutoService criarProdutoService;
     private final ListarProdutoService listarProdutoService;
-    private final BuscarProdutosPorIdService buscarProdutosPorIdService;
+    private final BuscarProdutoPorIdService buscarProdutoPorIdService;
+    private final BuscarProdutoService buscarProdutoService;
 
     @GetMapping
     public Page<ProdutoResponse> listar(@PathVariable Long lojaId, @AuthenticationPrincipal Jwt jwt,
@@ -49,6 +45,16 @@ public class ProdutoController {
     @GetMapping("/{produtoId}")
     @ResponseStatus(HttpStatus.OK)
     public ProdutoResponse buscarPorId(@PathVariable Long lojaId, @PathVariable Long produtoId, @AuthenticationPrincipal Jwt jwt){
-        return buscarProdutosPorIdService.buscarProdutosPorId(lojaId, produtoId,jwt.getSubject());
+        return buscarProdutoPorIdService.buscarProdutosPorId(lojaId, produtoId,jwt.getSubject());
     }
+
+    @GetMapping("/buscar")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<ProdutoResponse> buscarProdutos(@PathVariable Long lojaId,
+                                                @RequestParam(required = false) String busca,
+                                                Pageable pageable,
+                                                @AuthenticationPrincipal Jwt jwt){
+        return buscarProdutoService.listarProdutoLojaComBusca(lojaId, busca, pageable,jwt.getSubject());
+    }
+
 }
