@@ -1,5 +1,6 @@
 package farcic.dev.erp_gestao.produto.mapper;
 
+import farcic.dev.erp_gestao.produto.dto.request.AlterarProdutoRequest;
 import farcic.dev.erp_gestao.produto.dto.request.ProdutoRequest;
 import farcic.dev.erp_gestao.produto.dto.response.ProdutoResponse;
 import farcic.dev.erp_gestao.produto.entity.Produto;
@@ -33,6 +34,35 @@ public class ProdutoMapper {
                 .ativo(entity.getAtivo())
                 .lojaId(entity.getLoja().getId())
                 .build();
+    }
+
+    public void atualizar(
+            Produto produto,
+            AlterarProdutoRequest request
+    ) {
+        if (request.codigoInterno() != null) {
+            produto.setCodigoInterno(request.codigoInterno());
+        }
+
+        if (request.descricao() != null) {
+            produto.setDescricao(request.descricao());
+        }
+
+        if (request.gtin() != null) {
+            produto.setGtin(request.gtin());
+        }
+
+        if (request.unidade() != null) {
+            produto.setUnidade(request.unidade());
+        }
+
+        if (request.ncm() != null) {
+            produto.setNcm(request.ncm());
+        }
+
+        if (request.cest() != null) {
+            produto.setCest(request.cest());
+        }
     }
 
 }

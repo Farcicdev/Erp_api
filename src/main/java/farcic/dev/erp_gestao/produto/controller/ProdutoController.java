@@ -1,5 +1,6 @@
 package farcic.dev.erp_gestao.produto.controller;
 
+import farcic.dev.erp_gestao.produto.dto.request.AlterarProdutoRequest;
 import farcic.dev.erp_gestao.produto.dto.request.ProdutoRequest;
 import farcic.dev.erp_gestao.produto.dto.response.ProdutoResponse;
 import farcic.dev.erp_gestao.produto.service.*;
@@ -26,6 +27,7 @@ public class ProdutoController {
     private final BuscarProdutoPorIdService buscarProdutoPorIdService;
     private final BuscarProdutoService buscarProdutoService;
     private final MudarStatusService mudarStatusService;
+    private final AlterarProdutoService alterarProdutoService;
 
     @GetMapping
     public Page<ProdutoResponse> listar(@PathVariable Long lojaId, @AuthenticationPrincipal Jwt jwt,
@@ -59,6 +61,11 @@ public class ProdutoController {
     @ResponseStatus(HttpStatus.OK)
     public void mudarStatus(@PathVariable Long lojaId,@PathVariable Long produtoId,@AuthenticationPrincipal Jwt jwt){
         mudarStatusService.ativarOuInativar(lojaId, produtoId, jwt.getSubject());
+    }
+
+    @PatchMapping("/{produtoId}/alterar")
+    public ProdutoResponse alterarProduto(@PathVariable Long lojaId,@PathVariable Long produtoId,@AuthenticationPrincipal Jwt jwt,@Valid @RequestBody AlterarProdutoRequest produtoRequest){
+        return alterarProdutoService.alterarProduto(lojaId, produtoId, jwt.getSubject(), produtoRequest);
     }
 
 }
