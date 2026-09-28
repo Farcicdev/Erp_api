@@ -2,10 +2,7 @@ package farcic.dev.erp_gestao.produto.controller;
 
 import farcic.dev.erp_gestao.produto.dto.request.ProdutoRequest;
 import farcic.dev.erp_gestao.produto.dto.response.ProdutoResponse;
-import farcic.dev.erp_gestao.produto.service.BuscarProdutoPorIdService;
-import farcic.dev.erp_gestao.produto.service.BuscarProdutoService;
-import farcic.dev.erp_gestao.produto.service.CriarProdutoService;
-import farcic.dev.erp_gestao.produto.service.ListarProdutoService;
+import farcic.dev.erp_gestao.produto.service.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -28,6 +25,7 @@ public class ProdutoController {
     private final ListarProdutoService listarProdutoService;
     private final BuscarProdutoPorIdService buscarProdutoPorIdService;
     private final BuscarProdutoService buscarProdutoService;
+    private final MudarStatusService mudarStatusService;
 
     @GetMapping
     public Page<ProdutoResponse> listar(@PathVariable Long lojaId, @AuthenticationPrincipal Jwt jwt,
@@ -55,6 +53,12 @@ public class ProdutoController {
                                                 Pageable pageable,
                                                 @AuthenticationPrincipal Jwt jwt){
         return buscarProdutoService.listarProdutoLojaComBusca(lojaId, busca, pageable,jwt.getSubject());
+    }
+
+    @PatchMapping("/{produtoId}/status")
+    @ResponseStatus(HttpStatus.OK)
+    public void mudarStatus(@PathVariable Long lojaId,@PathVariable Long produtoId,@AuthenticationPrincipal Jwt jwt){
+        mudarStatusService.ativarOuInativar(lojaId, produtoId, jwt.getSubject());
     }
 
 }

@@ -19,6 +19,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     Optional<Produto> findByIdAndLojaIdAndAtivoTrue(Long produtoId, Long lojaId);
 
+    Optional<Produto> findByIdAndLojaId(Long produtoId, Long lojaId);
+
     @Query("""
     select p from Produto p where p.loja.id = :lojaId
         and(

@@ -23,11 +23,11 @@ public class BuscarProdutoPorIdService {
 
         acessoLojaService.buscarLojaAutorizada(keycloakSub, lojaId);
 
-        Produto produtoNaoExiste = produtoRepository.findByIdAndLojaIdAndAtivoTrue(produtoId, lojaId).orElseThrow(
+        Produto produto = produtoRepository.findByIdAndLojaIdAndAtivoTrue(produtoId, lojaId).orElseThrow(
                 () -> new ProdutoInativoException("Produto nao encontrado!")
         );
 
-        return produtoMapper.toResponse(produtoNaoExiste);
+        return produtoMapper.toResponse(produto);
     }
 
 }
