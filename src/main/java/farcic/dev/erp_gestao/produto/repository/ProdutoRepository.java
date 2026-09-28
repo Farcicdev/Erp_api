@@ -23,6 +23,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     @Query("""
     select p from Produto p where p.loja.id = :lojaId
+        and p.ativo = true
         and(
             :busca is null
             or lower(p.descricao) like lower(concat('%', :busca, '%'))
