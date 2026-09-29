@@ -16,6 +16,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     boolean existsByLoja_IdAndGtin(Long lojaId, String gtin);
 
     Page<Produto> findAllByLoja_IdAndAtivoTrue(Long lojaId, Pageable pageable);
+    Page<Produto> findAllByLoja_IdAndAtivo(Long lojaId, boolean ativo, Pageable pageable);
 
     Optional<Produto> findByIdAndLojaIdAndAtivoTrue(Long produtoId, Long lojaId);
 

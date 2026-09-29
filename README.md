@@ -126,7 +126,7 @@ O frontend espera o Keycloak em `http://localhost:8081`. Os detalhes do ambiente
 Na raiz do projeto:
 
 ```bash
-./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
 A API fica disponível, por padrão, em `http://localhost:8082`. As migrations do Flyway são executadas automaticamente na inicialização.
@@ -141,6 +141,15 @@ npm install
 npm run dev
 ```
 
+Para personalizar o Keycloak, copie `erp_frontend/.env.example` para
+`erp_frontend/.env` e ajuste os valores. Essas variáveis são públicas e não devem
+conter senhas. Em produção, são incorporadas durante o build do frontend.
+
+O proxy `/api` do Vite funciona no desenvolvimento. Ao publicar o frontend,
+configure o servidor web para encaminhar `/api/*` à API, removendo o prefixo
+`/api`, e servir `index.html` nas rotas da aplicação. Configure também as URLs
+de redirecionamento do client `erp-frontend` no Keycloak para o domínio publicado.
+
 O Vite informa no terminal o endereço local do frontend, normalmente `http://localhost:5173`.
 
 ## Testes e qualidade
@@ -148,8 +157,19 @@ O Vite informa no terminal o endereço local do frontend, normalmente `http://lo
 Para executar os testes do backend:
 
 ```bash
+docker compose --profile test up -d --wait postgres-test
 ./mvnw test
 ```
+
+O banco de testes é separado do banco da aplicação, usa a porta `55439` e
+armazenamento temporário, descartado quando o container é parado. As variáveis
+`ERP_TEST_DB_URL`, `ERP_TEST_DB_USERNAME` e `ERP_TEST_DB_PASSWORD` permitem
+usar outro banco exclusivo para testes.
+
+Produtos são listados como ativos por padrão; `?ativo=false` lista os inativos.
+`PATCH /lojas/{lojaId}/produtos/{produtoId}/status` exige um corpo JSON como
+`{"ativo": false}` ou `{"ativo": true}`. Repetir a requisição mantém o estado
+solicitado. A tela de produtos permite filtrar a situação e inativar ou reativar.
 
 Para validar o frontend:
 
@@ -192,7 +212,7 @@ As rotas protegidas exigem um token válido emitido pelo Keycloak.
 ## Próximos passos
 
 - Completar os fluxos administrativos de cliente e loja no frontend.
-- Adicionar edição e inativação de produtos.
+- Adicionar a tela de edição de produtos (a API já permite editar; a tela já permite inativar e reativar).
 - Ampliar a documentação OpenAPI.
 - Adicionar testes automatizados para o frontend.
 - Implementar estoque e movimentações por loja.

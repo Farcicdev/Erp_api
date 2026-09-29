@@ -6,10 +6,10 @@ import jakarta.validation.constraints.Size;
 
 public record AlterarProdutoRequest(
 
-        @Size(max = 50)
+        @Size(min = 1, max = 50)
         String codigoInterno,
 
-        @Size(max = 255)
+        @Size(min = 1, max = 255)
         String descricao,
         @Pattern(regexp = "(?:[0-9]{8}|[0-9]{12}|[0-9]{13}|[0-9]{14})",
                 message = "GTIN deve possuir 8, 12, 13 ou 14 números")
@@ -23,4 +23,8 @@ public record AlterarProdutoRequest(
         String cest
 
 ) {
+    public AlterarProdutoRequest {
+        codigoInterno = codigoInterno == null ? null : codigoInterno.strip();
+        descricao = descricao == null ? null : descricao.strip();
+    }
 }

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class ExceptionsHandler {
-    @ExceptionHandler({RevendaNotFoundException.class, ClienteNotFoundException.class, LojaNotFoundException.class})
+    @ExceptionHandler({RevendaNotFoundException.class, ClienteNotFoundException.class, LojaNotFoundException.class, ProdutoNotFoundException.class})
     public ResponseEntity<ResponseError> handleNaoEncontrado(RuntimeException e) {
         return resposta(HttpStatus.NOT_FOUND, e.getMessage());
     }

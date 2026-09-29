@@ -19,10 +19,10 @@ public class ListarProdutoService {
     private final ProdutoMapper produtoMapper;
 
     @Transactional(readOnly = true)
-    public Page<ProdutoResponse> listarProdutos(Pageable pageable, Long lojaId, String keycloakSub){
+    public Page<ProdutoResponse> listarProdutos(Pageable pageable, Long lojaId, String keycloakSub, boolean ativo){
         acessoLojaService.buscarLojaAutorizada(keycloakSub, lojaId);
 
-        return produtoRepository.findAllByLoja_IdAndAtivoTrue(lojaId, pageable)
+        return produtoRepository.findAllByLoja_IdAndAtivo(lojaId, ativo, pageable)
                 .map(produtoMapper::toResponse);
     }
 

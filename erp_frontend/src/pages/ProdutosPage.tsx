@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import {
     Alert, Box, Button, Chip, CircularProgress, Paper, Stack, Table, TableBody,
-    TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography,
+    TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, MenuItem, TextField,
 } from '@mui/material'
 import { Link } from 'react-router'
-import { listarProdutos } from '../api/produtosApi'
+import { listarProdutos, mudarStatusProduto } from '../api/produtosApi'
 import { useLoja } from '../contexts/useLoja'
 import type { PageResponse } from '../types/PageResponse'
 import type { Produto } from '../types/Produto'
@@ -17,8 +17,11 @@ export function ProdutosPage() {
     const [pagina, setPagina] = useState(0)
     const [tamanho, setTamanho] = useState(10)
     const [tentativa, setTentativa] = useState(0)
+    const [ativo, setAtivo] = useState(true)
+    const [alterando, setAlterando] = useState(false)
+    const [erroStatus, setErroStatus] = useState('')
     const [resultado, setResultado] = useState<Resultado | null>(null)
-    const chave = `${lojaId}:${pagina}:${tamanho}:${tentativa}`
+    const chave = `${lojaId}:${pagina}:${tamanho}:${tentativa}:${ativo}`
     // Dados só são exibidos quando pertencem à consulta atual.
     const carregando = resultado?.chave !== chave
     const dados = !carregando ? resultado?.dados : null
@@ -29,7 +32,7 @@ export function ProdutosPage() {
         let ignorar = false
         async function buscar() {
             try {
-                const resposta = await listarProdutos(lojaId!, pagina, tamanho)
+                const resposta = await listarProdutos(lojaId!, pagina, tamanho, ativo)
                 if (!ignorar) setResultado({ chave, dados: resposta, erro: '' })
             } catch (falha) {
                 if (!ignorar) setResultado({
@@ -41,7 +44,22 @@ export function ProdutosPage() {
         void buscar()
         // Descarta respostas que chegam após troca de loja, página ou saída da tela.
         return () => { ignorar = true }
-    }, [lojaId, pagina, tamanho, chave])
+    }, [lojaId, pagina, tamanho, chave, ativo])
+
+    async function alterarStatus(produto: Produto) {
+        if (lojaId === undefined || alterando) return
+        setAlterando(true)
+        setErroStatus('')
+        try {
+            await mudarStatusProduto(lojaId, produto.id, !produto.ativo)
+            setPagina(0)
+            setTentativa((valor) => valor + 1)
+        } catch (falha) {
+            setErroStatus(falha instanceof Error ? falha.message : 'Não foi possível alterar a situação.')
+        } finally {
+            setAlterando(false)
+        }
+    }
 
     return (
         <Stack spacing={2}>
@@ -52,6 +70,13 @@ export function ProdutosPage() {
                 </Box>
                 <Button component={Link} to="/produtos/novo" variant="contained" sx={{ alignSelf: 'flex-start' }}>Novo produto</Button>
             </Stack>
+            <TextField select label="Situação" value={String(ativo)} disabled={alterando}
+                onChange={(evento) => { setAtivo(evento.target.value === 'true'); setPagina(0); setErroStatus('') }}
+                sx={{ width: 180 }}>
+                <MenuItem value="true">Ativos</MenuItem>
+                <MenuItem value="false">Inativos</MenuItem>
+            </TextField>
+            {erroStatus && <Alert severity="error">{erroStatus}</Alert>}
             {carregando ? (
                 <Stack direction="row" spacing={2} role="status" sx={{ alignItems: 'center' }}>
                     <CircularProgress size={24} aria-label="Carregando produtos" />
@@ -70,7 +95,7 @@ export function ProdutosPage() {
                             <Table sx={{ minWidth: 760 }} aria-label={`Produtos de ${lojaAtual?.nomeFantasia}`}>
                                 <TableHead>
                                     <TableRow>
-                                        {['Código interno', 'Descrição', 'Código de barras', 'Unidade', 'NCM', 'CEST', 'Situação'].map((coluna) => (
+                                        {['Código interno', 'Descrição', 'Código de barras', 'Unidade', 'NCM', 'CEST', 'Situação', 'Ações'].map((coluna) => (
                                             <TableCell key={coluna}>{coluna}</TableCell>
                                         ))}
                                     </TableRow>
@@ -85,6 +110,9 @@ export function ProdutosPage() {
                                             <TableCell>{produto.ncm}</TableCell>
                                             <TableCell>{produto.cest ?? '—'}</TableCell>
                                             <TableCell><Chip size="small" label={produto.ativo ? 'Ativo' : 'Inativo'} color={produto.ativo ? 'success' : 'default'} /></TableCell>
+                                            <TableCell><Button disabled={alterando} onClick={() => void alterarStatus(produto)}>
+                                                {produto.ativo ? 'Inativar' : 'Reativar'}
+                                            </Button></TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
