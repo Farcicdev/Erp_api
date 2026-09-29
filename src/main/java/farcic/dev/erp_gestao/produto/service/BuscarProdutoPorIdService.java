@@ -24,7 +24,7 @@ public class BuscarProdutoPorIdService {
         acessoLojaService.buscarLojaAutorizada(keycloakSub, lojaId);
 
         Produto produto = produtoRepository.findByIdAndLojaIdAndAtivoTrue(produtoId, lojaId).orElseThrow(
-                () -> new ProdutoInativoException("Produto nao encontrado!")
+                () -> new ProdutoInativoException("Produto nao esta Ativo ou nao cadastrado!")
         );
 
         return produtoMapper.toResponse(produto);
