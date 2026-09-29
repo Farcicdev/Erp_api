@@ -6,6 +6,7 @@ import { RequireAdminCliente } from './RequireAdminCliente'
 import { RequireLojaAtual } from './RequireLojaAtual'
 import { ProdutosPage } from '../pages/ProdutosPage'
 import { ProdutoNovoPage } from '../pages/ProdutoNovoPage'
+import { ProdutoEditarPage } from '../pages/ProdutoEditarPage'
 
 export function AppRoutes() {
     return (
@@ -17,6 +18,7 @@ export function AppRoutes() {
                     <Route element={<RequireLojaAtual />}>
                         <Route path="/produtos" element={<ProdutosPage />} />
                         <Route path="/produtos/novo" element={<ProdutoNovoPage />} />
+                        <Route path="/produtos/:produtoId/editar" element={<ProdutoEditarPage />} />
                     </Route>
                 </Route>
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />

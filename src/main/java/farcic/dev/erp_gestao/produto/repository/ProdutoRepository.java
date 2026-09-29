@@ -24,7 +24,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     @Query("""
     select p from Produto p where p.loja.id = :lojaId
-        and p.ativo = true
+        and p.ativo = :ativo
         and(
             :busca is null
             or lower(p.descricao) like lower(concat('%', :busca, '%'))
@@ -32,5 +32,5 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
             or p.codigoInterno = :busca
             )
     """)
-    Page<Produto> buscarProduto(Long lojaId, String busca, Pageable pageable);
+    Page<Produto> buscarProduto(Long lojaId, String busca, boolean ativo, Pageable pageable);
 }

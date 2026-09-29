@@ -21,12 +21,12 @@ public class BuscarProdutoService {
     @Transactional(readOnly = true)
     public Page<ProdutoResponse> listarProdutoLojaComBusca(Long lojaId,
                                                        String busca,
+                                                       boolean ativo,
                                                        Pageable pageable,
                                                        String keycloakSub){
         acessoLojaService.buscarLojaAutorizada(keycloakSub, lojaId);
 
-        return produtoRepository.buscarProduto(lojaId, busca, pageable)
+        return produtoRepository.buscarProduto(lojaId, busca, ativo, pageable)
                 .map(produtoMapper::toResponse);
         }
     }
-

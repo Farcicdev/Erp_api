@@ -54,9 +54,10 @@ public class ProdutoController {
     @ResponseStatus(HttpStatus.OK)
     public Page<ProdutoResponse> buscarProdutos(@PathVariable Long lojaId,
                                                 @RequestParam(required = false) String busca,
+                                                @RequestParam(defaultValue = "true") boolean ativo,
                                                 Pageable pageable,
                                                 @AuthenticationPrincipal Jwt jwt){
-        return buscarProdutoService.listarProdutoLojaComBusca(lojaId, busca, pageable,jwt.getSubject());
+        return buscarProdutoService.listarProdutoLojaComBusca(lojaId, busca, ativo, pageable,jwt.getSubject());
     }
 
     @PatchMapping("/{produtoId}/status")

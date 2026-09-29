@@ -368,6 +368,80 @@ class ProdutoHttpTests {
                 .andExpect(status().isForbidden());
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void buscaPorDescricaoCodigoEGtinRespeitaStatusELoja(boolean ativo) throws Exception {
+        Long id = criarProdutoParaAlterar();
+        criar(outraLoja, JSON).andExpect(status().isCreated());
+        // Mesmo conteúdo nas duas lojas: a busca nunca pode misturar seus resultados.
+        em.createQuery("update Produto p set p.ativo = :ativo where p.loja.id in (:loja, :outra)")
+                .setParameter("ativo", ativo).setParameter("loja", loja.getId())
+                .setParameter("outra", outraLoja.getId()).executeUpdate();
+        em.clear();
+        for (String busca : new String[]{"pRoDu", "A", "12345678"}) {
+            mvc.perform(get(url(loja) + "/buscar").param("busca", busca)
+                            .param("ativo", String.valueOf(ativo)).with(auth()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.totalElements").value(1))
+                    .andExpect(jsonPath("$.content[0].id").value(id))
+                    .andExpect(jsonPath("$.content[0].lojaId").value(loja.getId()))
+                    .andExpect(jsonPath("$.content[0].ativo").value(ativo));
+            mvc.perform(get(url(loja) + "/buscar").param("busca", busca)
+                            .param("ativo", String.valueOf(!ativo)).with(auth()))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(0));
+        }
+        for (Loja destino : new Loja[]{lojaOutroCliente, lojaOutraRevenda}) {
+            mvc.perform(get(url(destino) + "/buscar").param("ativo", String.valueOf(ativo)).with(auth()))
+                    .andExpect(status().isForbidden());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void buscaPaginaSomenteResultadosDaSituacaoELoja(boolean ativo) throws Exception {
+        criar(loja, JSON).andExpect(status().isCreated());
+        criar(loja, JSON.replace(" A ", "B").replace("12345678 ", "87654321 "))
+                .andExpect(status().isCreated());
+        em.createQuery("update Produto p set p.ativo = :ativo where p.loja.id = :loja")
+                .setParameter("ativo", ativo).setParameter("loja", loja.getId()).executeUpdate();
+        em.clear();
+        criar(loja, JSON.replace(" A ", "C").replace("12345678 ", "11111111 "))
+                .andExpect(status().isCreated());
+        em.createQuery("update Produto p set p.ativo = :ativo where p.loja.id = :loja and p.codigoInterno = 'C'")
+                .setParameter("ativo", !ativo).setParameter("loja", loja.getId()).executeUpdate();
+        criar(outraLoja, JSON).andExpect(status().isCreated());
+        em.createQuery("update Produto p set p.ativo = :ativo where p.loja.id = :loja")
+                .setParameter("ativo", ativo).setParameter("loja", outraLoja.getId()).executeUpdate();
+        em.clear();
+        for (int pagina = 0; pagina < 2; pagina++) {
+            mvc.perform(get(url(loja) + "/buscar").param("busca", "Produto")
+                            .param("ativo", String.valueOf(ativo)).param("page", String.valueOf(pagina))
+                            .param("size", "1").param("sort", "codigoInterno,asc").with(auth()))
+                    .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(2))
+                    .andExpect(jsonPath("$.totalPages").value(2)).andExpect(jsonPath("$.number").value(pagina))
+                    .andExpect(jsonPath("$.content.length()").value(1))
+                    .andExpect(jsonPath("$.content[0].codigoInterno").value(pagina == 0 ? "A" : "B"))
+                    .andExpect(jsonPath("$.content[0].ativo").value(ativo))
+                    .andExpect(jsonPath("$.content[0].lojaId").value(loja.getId()));
+        }
+        mvc.perform(get(url(loja) + "/buscar").param("busca", "Produto")
+                        .param("ativo", String.valueOf(ativo)).param("page", "2").param("size", "1").with(auth()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.content").isEmpty())
+                .andExpect(jsonPath("$.totalElements").value(2));
+        mvc.perform(get(url(loja) + "/buscar").param("busca", "Inexistente")
+                        .param("ativo", String.valueOf(ativo)).with(auth()))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.totalElements").value(0));
+    }
+
+    @Test
+    void produtoInativoNaoPodeSerConsultadoParaEdicaoNemAlterado() throws Exception {
+        Long id = criarProdutoParaAlterar();
+        alterar(loja, id, "/status", "{\"ativo\":false}").andExpect(status().isOk());
+        mvc.perform(get(url(loja) + "/" + id).with(auth())).andExpect(status().isBadRequest());
+        alterar(loja, id, "/alterar", "{\"descricao\":\"Indevida\"}").andExpect(status().isBadRequest());
+        assertThat(produtos.findById(id).orElseThrow().getDescricao()).isEqualTo("Produto");
+    }
+
     private Long criarProdutoParaAlterar() throws Exception {
         criar(loja, JSON).andExpect(status().isCreated());
         return produtos.findAllByLoja_IdAndAtivoTrue(loja.getId(), org.springframework.data.domain.Pageable.unpaged())
