@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres-test:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: erp_refactor_test
+          POSTGRES_USER: erp_test
+          POSTGRES_PASSWORD: erp_test
+        ports:
+          - 55439:5432
+        options: >-
+          --health-cmd "pg_isready -U erp_test -d erp_refactor_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      SPRING_PROFILES_ACTIVE: test
+      ERP_TEST_DB_URL: jdbc:postgresql://localhost:55439/erp_refactor_test
+      ERP_TEST_DB_USERNAME: erp_test
+      ERP_TEST_DB_PASSWORD: erp_test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run backend tests
+        run: ./mvnw test
+
+  frontend:
+    name: Frontend lint and build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: erp_frontend
+
+    env:
+      VITE_KEYCLOAK_URL: http://localhost:8081
+      VITE_KEYCLOAK_REALM: erp
+      VITE_KEYCLOAK_CLIENT_ID: erp-frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: erp_frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run frontend lint
+        run: npm run lint
+
+      - name: Build frontend
+        run: npm run build
